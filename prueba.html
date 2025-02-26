@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adivina el Número de 4 Cifras</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .message {
+            margin: 20px;
+            font-size: 1.2em;
+        }
+        .input {
+            padding: 10px;
+            font-size: 1em;
+        }
+        .button {
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+        .attempts {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+        .history {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+        .history ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .history li {
+            margin: 5px 0;
+        }
+        .rank {
+            margin-top: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Adivina el Número de 4 Cifras</h1>
+    <p>Ingresa un número de 4 cifras (sin repetir dígitos y sin el dígito 0):</p>
+
+    <div class="message" id="message"></div>
+
+    <input type="number" id="guessInput" class="input" min="1111" max="9999">
+    <button onclick="checkGuess()" class="button">Adivinar</button>
+
+    <div class="attempts" id="attempts"></div>
+    <div class="rank" id="rank"></div>
+    <div class="history" id="history">
+        <h2>Historial de Intentos</h2>
+        <ul id="historyList"></ul>
+    </div>
+
+    <script>
+        // Función para generar un número de 4 cifras sin dígitos repetidos y sin el dígito 0
+        function generateSecretNumber() {
+            const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+            let secretNumber = '';
+            while (secretNumber.length < 4) {
+                const randomIndex = Math.floor(Math.random() * digits.length);
+                const digit = digits[randomIndex];
+                if (!secretNumber.includes(digit)) {
+                    secretNumber += digit;
+                }
+            }
+            return secretNumber;
+        }
+
+        // Generar el número secreto
+        const secretNumber = generateSecretNumber();
+        let attempts = 0;
+        const maxAttempts = 18;
+        const historyList = document.getElementById('historyList');
+        const rankDisplay = document.getElementById('rank');
+
+        function checkGuess() {
+            const userGuess = document.getElementById('guessInput').value;
+            const message = document.getElementById('message');
+            const attemptsDisplay = document.getElementById('attempts');
+
+            // Validar la entrada del usuario
+            if (userGuess.length !== 4 || !/^[1-9]{4}$/.test(userGuess) || new Set(userGuess).size !== 4) {
+                message.innerHTML = 'Por favor, ingresa un número válido de 4 cifras (sin repetir dígitos y sin el dígito 0).';
+                message.style.color = 'red';
+                return;
+            }
+
+            attempts++;
+            let fama = 0;
+            let toque = 0;
+
+            // Verificar "Fama" y "Toque"
+            for (let i = 0; i < 4; i++) {
+                if (userGuess[i] === secretNumber[i]) {
+                    fama++;
+                } else if (secretNumber.includes(userGuess[i])) {
+                    toque++;
+                }
+            }
+
+            // Mostrar el número de intentos
+            attemptsDisplay.innerHTML = `Intentos: ${attempts} / ${maxAttempts}`;
+
+            // Agregar el intento al historial
+            const historyItem = document.createElement('li');
+            historyItem.innerHTML = `Intento ${attempts}: ${userGuess} - Fama: ${fama}, Toque: ${toque}`;
+            historyList.appendChild(historyItem);
+
+            // Verificar si el jugador ha ganado
+            if (fama === 4) {
+                const rankMessage = getRankMessage(attempts);
+                message.innerHTML = `¡Felicidades! Adivinaste el número secreto (${secretNumber}) en ${attempts} intentos. ${rankMessage}`;
+                message.style.color = 'green';
+                rankDisplay.innerHTML = `Rango: ${getRank(attempts)}`;
+                disableInput();
+            } else if (attempts >= maxAttempts) {
+                message.innerHTML = 'Game Over, te quedaste sin intentos. El número secreto era: ' + secretNumber;
+                message.style.color = 'red';
+                disableInput();
+            } else {
+                message.innerHTML = 'Sigue intentando.';
+                message.style.color = 'black';
+            }
+
+            // Limpiar el campo de entrada
+            document.getElementById('guessInput').value = '';
+        }
+
+        function disableInput() {
+            document.getElementById('guessInput').disabled = true;
+            document.querySelector('button').disabled = true;
+        }
+
+        // Función para obtener el mensaje de rango
+        function getRankMessage(attempts) {
+            if (attempts === 1) return "Eres Nostradamus, absolutamente demencial.";
+            if (attempts === 2) return "Eres Baba Vanga, pitonisa legendaria.";
+            if (attempts === 3) return "Eres Rasputín, adivino místico.";
+            if (attempts === 4) return "Eres René Guénon, vidente épico.";
+            return "";
+        }
+
+        // Función para obtener el rango
+        function getRank(attempts) {
+            if (attempts === 1) return "Ultra Mega S+++";
+            if (attempts === 2) return "Ultra S+++";
+            if (attempts === 3) return "Ultra S++";
+            if (attempts === 4) return "S+";
+            if (attempts === 5) return "S";
+            if (attempts === 6) return "A+";
+            if (attempts === 7) return "A";
+            if (attempts === 8) return "A-";
+            if (attempts === 9) return "B+";
+            if (attempts === 10) return "B";
+            if (attempts === 11) return "B-";
+            if (attempts === 12) return "C";
+            if (attempts === 13) return "C-";
+            if (attempts === 14) return "D";
+            if (attempts === 15) return "D-";
+            if (attempts === 16) return "E";
+            if (attempts === 17) return "E-";
+            if (attempts === 18) return "F";
+            return "F-";
+        }
+    </script>
+
+</body>
+</html>
