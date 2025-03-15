@@ -1,5 +1,3 @@
-Construido con Deepseek.
-
 Juego adivinas número secreto "Toque y Fama"
 
 El sistema crea un número aleatorio de 4 cífras. Del 1 al 9, se excluye el 0 y sin repetir ningún dígito.
